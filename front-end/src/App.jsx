@@ -3,6 +3,7 @@
 import * as React from "react"
 import Navbar from "./components/ui/navbar"
 import { Routes, Route } from "react-router-dom"
+import Analytics from "./pages/Analytics"
 
 const components = [
   {
@@ -49,6 +50,7 @@ function App() {
       <Route path="/" element={<h1>Home page</h1>} />
       <Route path="/book" element={<h1>Book</h1>} />
       <Route path="/about" element={<h1>About</h1>} />
+      <Route path="/analytics" element={<Analytics />} />
     </Routes>
    </div>
   )

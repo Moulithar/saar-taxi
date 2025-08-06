@@ -51,6 +51,12 @@ export default function Navbar() {
             >
               About Us
             </Link>
+            <Link
+              to="/analytics"
+              className="text-foreground/80 hover:text-primary transition-colors"
+            >
+              Analytics
+            </Link>
           </nav>
 
           {/* Auth Buttons */}
