@@ -246,7 +246,7 @@ export default function Analytics() {
 
   const onSubmit = (data) => {
     const payload = {
-      invoiceId: activeId ? activeId : `INV${prefixZero(invoices.length + 1)}`,
+      invoiceId: activeId ? activeId :  `INV${prefixZero(+invoices[invoices.length -1].invoiceId.slice(-3) + 1)}`,
       deleted: false,
       payment: {
         method: data.method,
@@ -260,8 +260,9 @@ export default function Analytics() {
       );
       setInvoices(updatedArray);
     } else {
-      setInvoices([...invoices, payload]);
+      setInvoices((prev) => [...prev, payload]);
     }
+    alert("Invoice added successfully");
     setActiveId(null);
     setOpenDialog(false);
     form.reset();
@@ -280,14 +281,9 @@ export default function Analytics() {
     }
   }, [activeId]);
 
-  const filteredInvoices = invoices.filter(
-    (invoice) => invoice.deleted == false
-  );
 
   const deleteInvoice = (id) => {
-    const updatedArray = invoices.map((invoice) =>
-      invoice.invoiceId == id ? { ...invoice, deleted: true } : invoice
-    );
+    const updatedArray = invoices.filter((invoice) => invoice.invoiceId !== id);
     setInvoices(updatedArray);
   };
 
@@ -298,7 +294,7 @@ export default function Analytics() {
   return (
     <>
       <pre>{JSON.parse(localStorage.getItem("invoices")).filter((invoice) => invoice.deleted == false).length}</pre>
-      <pre>{filteredInvoices.length}</pre>
+      {/* <pre>{invoices.length}</pre> */}
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
@@ -312,7 +308,7 @@ export default function Analytics() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredInvoices.map((invoice) => (
+          {invoices.map((invoice) => (
             <TableRow key={invoice.invoiceId}>
               <TableCell className="font-medium">{invoice.invoiceId}</TableCell>
               <TableCell>{invoice.status}</TableCell>
@@ -337,6 +333,7 @@ export default function Analytics() {
                       Edit
                     </Button>
                   </DialogTrigger>
+                
                   <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                       <DialogTitle>
@@ -566,7 +563,7 @@ export default function Analytics() {
           <TableRow>
             <TableCell colSpan={4}>Total</TableCell>
             <TableCell className="text-right">
-              {filteredInvoices.reduce(
+              {invoices.reduce(
                 (acc, invoice) => acc + invoice.totalAmount,
                 100
               )}
