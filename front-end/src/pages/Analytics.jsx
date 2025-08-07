@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronDownIcon } from "lucide-react";
+import { CalendarIcon, ChevronDownIcon, XIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -293,7 +293,7 @@ export default function Analytics() {
 
   return (
     <>
-      <pre>{JSON.parse(localStorage.getItem("invoices")).filter((invoice) => invoice.deleted == false).length}</pre>
+      {/* <pre>{JSON.parse(localStorage.getItem("invoices")).filter((invoice) => invoice.deleted == false).length}</pre> */}
       {/* <pre>{invoices.length}</pre> */}
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>
@@ -321,7 +321,7 @@ export default function Analytics() {
               </TableCell>
               <TableCell className="text-center">
                 {" "}
-                <Dialog open={openDialog}>
+                <Dialog open={openDialog} >
                   <DialogTrigger>
                     <Button
                       variant="outline"
@@ -334,10 +334,11 @@ export default function Analytics() {
                     </Button>
                   </DialogTrigger>
                 
-                  <DialogContent className="sm:max-w-md">
+                  <DialogContent className="sm:max-w-md" showCloseButton={false}>
                     <DialogHeader>
+                      <XIcon onClick={() => setOpenDialog(false)} className="absolute top-[16px] right-[16px] p-[4px] cursor-pointer hover:bg-primary hover:text-primary-foreground rounded" />
                       <DialogTitle>
-                        Selected id : {invoice.invoiceId}{" "}
+                         {activeId ? `Edit Invoice : ${activeId}` : "Add Invoice"}
                       </DialogTitle>
                       <DialogDescription>
                         Anyone who has this link will be able to view this.

@@ -5,14 +5,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Navbar() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
-  useEffect(() => {
-    setTheme(localStorage.getItem("theme"));
-  }, []);
 
   useEffect(() => {
     document.body.classList.toggle("dark");
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
 
@@ -62,21 +60,22 @@ export default function Navbar() {
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Button
-              variant="outline"
-              className="border-border hover:bg-accent hover:text-accent-foreground"
+              variant="secondary"
+         
             >
               Login
             </Button>
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button >
               Sign Up
             </Button>
             <Button
+              variant="ghost"
               onClick={() => {
                 setTheme(theme === "light" ? "dark" : "light");
               }}
             >
               {theme === "light" ? (
-                <Sun />
+                <Sun  />
               ) : (
                 <Moon />
               )}
