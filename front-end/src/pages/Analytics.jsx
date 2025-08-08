@@ -115,6 +115,7 @@ export default function Analytics() {
 
   const [activeId, setActiveId] = useState(null);
 
+  const transactions = watch("transactions");
   const onSubmit = (data) => {
     const existingInvoice = invoices.find(
       (invoice) => invoice.invoiceId == activeId
@@ -127,12 +128,11 @@ export default function Analytics() {
       payment: {
         method: data.method,
         transactions: [
-          ...(existingInvoice.payment?.transactions || []),
-          ...(data.transactions || []),
+          ...transactions
         ].filter(Boolean),
       },
     };
-
+    
     const addPayload = {
       ...data,
       invoiceId: `INV${prefixZero(
@@ -177,7 +177,6 @@ export default function Analytics() {
     setInvoices(updatedArray);
   };
 
-  const transactions = watch("transactions");
 
   useEffect(() => {
     localStorage.setItem("invoices", JSON.stringify(invoices));
@@ -218,7 +217,8 @@ export default function Analytics() {
                 {dayjs(invoice.deadlineDate).format("DD MMM YYYY")}
               </TableCell>
               <TableCell className="text-right">
-                {invoice.totalAmount}
+                {/* <pre>{JSON.stringify(invoice.payment?.transactions, null, 2)}</pre> */}
+                {(invoice.payment?.transactions||[]).reduce((acc, t)=> acc + t.amount, 0)}
               </TableCell>
               <TableCell className="text-center">
                 {" "}
@@ -257,7 +257,8 @@ export default function Analytics() {
                           onSubmit={handleSubmit(onSubmit)}
                           className="space-y-8"
                         >
-                          <pre>{JSON.stringify(getValues(), null, 2)}</pre>
+                          <p>{JSON.stringify(getValues(), null, 2)}</p>
+                          <p>{JSON.stringify(transactions, null, 2)}</p>
                           {/* <pre>{JSON.stringify(watch("status"), null, 2)}</pre> */}
                           <div className="flex justify-between gap-[16px] w-full">
                             <div className="flex-1">
@@ -370,11 +371,13 @@ export default function Analytics() {
                               setValue("transactions", [
                                 ...transactions,
                                 {
-                                  transactionId: `TXN${
-                                    +transactions[
-                                      transactions.length - 1
-                                    ].transactionId.slice(-4) + 1
-                                  }`,
+                                  transactionId: transactions.length
+                                    ? `TXN${
+                                        +transactions[
+                                          transactions.length - 1
+                                        ]?.transactionId.slice(-4) + 1
+                                      }`
+                                    : "TXN001",
                                   amount: 0,
                                 },
                               ]);
@@ -405,9 +408,12 @@ export default function Analytics() {
                                               /[^0-9]/g,
                                               ""
                                             );
+                                          console.log(transaction.transactionId + " " + e.target.value);
                                           field.onChange(
                                             e.target.value && +e.target.value
                                           );
+                                          setValue("transactions", transactions.map((t)=> t.transactionId === transaction.transactionId ? {...t, amount: +e.target.value} : t))
+                                          console.log(transactions);
                                         }}
                                       />
                                     </FormControl>
