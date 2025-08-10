@@ -11,7 +11,7 @@ const [todos, setTodos] = useState([]);
 
 const fetchTodos = async () => {
   try {
-    const response = await fetch('http://localhost:4000/todos');
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/todos`);
     const data = await response.json();
     setTodos(data);
     setMessage('');
@@ -23,7 +23,7 @@ const fetchTodos = async () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:4000/todos', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/todos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,6 +51,8 @@ const fetchTodos = async () => {
 
   return (
     <div>
+      <h1>Sigma sigma boy</h1>
+      <p>Forget the safety, be where you fear to live, destroy reputation, be notorious</p>
       <h1>{greeting}</h1>
       {/* ...rest of your home page */}
 
