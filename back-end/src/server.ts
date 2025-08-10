@@ -61,6 +61,40 @@ app.post("/todos", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
+app.delete("/todos/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).json({ error: "ID is required" });
+        }
+
+        // First get the todo we're about to delete
+        const [todos] = await pool.execute<Todo[]>(
+            "SELECT * FROM todos WHERE id = ?",
+            [id]
+        );
+        
+        if (todos.length === 0) {
+            return res.status(404).json({ error: "Todo not found" });
+        }
+        
+        const deletedTodo = todos[0];
+        
+        // Then delete it
+        const [result] = await pool.execute<ResultSetHeader>(
+            "DELETE FROM todos WHERE id = ?",
+            [id]
+        );
+
+        res.status(200).json({
+            message: "Todo deleted successfully",
+            deletedTodo
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
 
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server is running on http://localhost:${PORT}`);
