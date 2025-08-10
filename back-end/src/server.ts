@@ -15,6 +15,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']  // Allowed headers
 }));
 
+app.use(express.json());
+
 interface Todo extends RowDataPacket {
     id: number;
     text: string;
@@ -28,7 +30,7 @@ app.get("/", async (req, res) => {
 });
 
 
-app.get("/todos", async (req, res) => {
+app.get("/api/todos", async (req, res) => {
     try {
         const [todos] = await pool.execute<Todo[]>("SELECT * FROM todos");
         res.json(todos);
@@ -38,7 +40,7 @@ app.get("/todos", async (req, res) => {
     }
 });
 
-app.post("/todos", async (req, res) => {
+app.post("/api/todos", async (req, res) => {
     try {
         const { text } = req.body;
         if (!text) {
@@ -61,7 +63,33 @@ app.post("/todos", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-app.delete("/todos/:id", async (req, res) => {
+
+app.put("/api/todos/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { text } = req.body;
+        if (!id || !text) {
+            return res.status(400).json({ error: "ID and text are required" });
+        }
+
+        const [result] = await pool.execute<ResultSetHeader>(
+            "UPDATE todos SET text = ? WHERE id = ?",
+            [text, id]
+        );
+
+        const [updatedTodo] = await pool.execute<Todo[]>(
+            "SELECT * FROM todos WHERE id = ?",
+            [id]
+        );
+
+        res.status(200).json(updatedTodo[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+app.delete("/api/todos/:id", async (req, res) => {
     try {
         const id = req.params.id;
         if (!id) {

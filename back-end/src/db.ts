@@ -15,7 +15,7 @@ const pool = mysql.createPool({
 // Test the connection
 pool.getConnection()
   .then(conn => {
-    console.log('Successfully connected to Railway MySQL');
+    console.log('Successfully connected to Clever cloud MySQL');
     return conn.query(`
       CREATE TABLE IF NOT EXISTS todos (
         id INT AUTO_INCREMENT PRIMARY KEY,

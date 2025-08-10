@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getGreeting } from "../utils/greetings";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const greeting = getGreeting("Mouli");
@@ -8,10 +10,11 @@ export default function Home() {
   const [message, setMessage] = useState('');
 
 const [todos, setTodos] = useState([]);
+const [editText, setEditText] = useState(null);
 
 const fetchTodos = async () => {
   try {
-    const response = await fetch(`${"https://saar-taxi-api.vercel.app"}/todos`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}todos`);
     const data = await response.json();
     setTodos(data);
     setMessage('');
@@ -23,7 +26,7 @@ const fetchTodos = async () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${"https://saar-taxi-api.vercel.app"}/todos`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}todos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,6 +45,49 @@ const fetchTodos = async () => {
   };
 
 
+  const deleteTodo = async (id) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}todos/${id}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await response.json();
+      setMessage(`Todo deleted: ${data.text} (ID: ${data.id})`);
+      fetchTodos();
+    } catch (error) {
+      setMessage('Error deleting todo');
+      console.error('Error:', error);
+    }
+  };
+
+  const updateTodo = async (id) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}todos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({text: editText }),
+      });
+      
+      const data = await response.json();
+      setMessage(`Todo updated: ${data.text} (ID: ${data.id})`);
+      fetchTodos();
+    } catch (error) {
+      setMessage('Error updating todo');
+      console.error('Error:', error);
+    }
+  };
+
+const [editTodo, setEditTodo] = useState(null);
+
+
+useEffect(() => {
+  if (editTodo) {
+    setEditText(todos.find(todo => todo.id === editTodo).text);
+  }
+}, [editTodo]);
+
   useEffect(() => {
  
     fetchTodos();
@@ -51,10 +97,7 @@ const fetchTodos = async () => {
 
   return (
     <div>
-      <h1>Sigma sigma boy</h1>
-      <p>Forget the safety, be where you fear to live, destroy reputation, be notorious</p>
-      <h1>{greeting}</h1>
-      <h1>{greeting}</h1>
+     
       {/* ...rest of your home page */}
 
       <div style={{ padding: '20px' }}>
@@ -69,10 +112,21 @@ const fetchTodos = async () => {
         />
         <button type="submit">Add Todo</button>
       </form>
-      {message && <p>{message}</p>}
+
       <ul>
         {(Array.isArray(todos) && todos || []).map((todo) => (
-          <li key={todo.id}>{todo.text}</li>
+          <li key={todo.id} className="flex justify-between mb-2 gap-[24px]">
+            <Input value={editTodo === todo.id ? editText : todo.text} disabled={editTodo != todo.id} onChange={(e) => setEditText(e.target.value)} />
+            <div className="flex gap-2">
+
+<h1>{todo.id}</h1> <h1>{todo.id}</h1>
+            {editTodo === todo.id && (
+            <Button  variant="primary" onClick={() => updateTodo(todo.id)}>Update</Button>
+            )}
+            <Button  variant="outline" onClick={() => setEditTodo(todo.id)}>Edit</Button>
+            <Button  variant="destructive" onClick={() => deleteTodo(todo.id)}>Delete</Button>
+            </div>
+          </li>
         ))}
       </ul>
     </div>
