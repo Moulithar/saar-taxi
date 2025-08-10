@@ -70,7 +70,7 @@ const fetchTodos = async () => {
       </form>
       {message && <p>{message}</p>}
       <ul>
-        {(todos || []).map((todo) => (
+        {(Array.isArray(todos) && todos || []).map((todo) => (
           <li key={todo.id}>{todo.text}</li>
         ))}
       </ul>
