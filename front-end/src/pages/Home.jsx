@@ -126,7 +126,8 @@ export default function Home() {
     <div>
       {/* ...rest of your home page */}
 
-      <div style={{ padding: "20px" }} className="flex justify-center">
+        <h1 className="text-2xl text-center mt-[20px] font-bold"> My Todos </h1> 
+      <div style={{ padding: "0px" }} className="flex justify-center">
         <div>
           <form
             onSubmit={handleSubmit}
