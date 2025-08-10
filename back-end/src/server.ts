@@ -7,8 +7,13 @@ import pool from "./db.js";
 const app = express();
 const PORT = 4000;
 
-app.use(cors());
-app.use(express.json());
+// Replace line 10 with this:
+// Replace line 10 with this:
+app.use(cors({
+    origin: '*',  // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization']  // Allowed headers
+}));
 
 interface Todo extends RowDataPacket {
     id: number;
