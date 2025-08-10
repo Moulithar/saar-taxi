@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { getGreeting } from "../utils/greetings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CheckCircle2 } from "lucide-react";
 
 export default function Home() {
   const greeting = getGreeting("Mouli");
@@ -62,7 +63,7 @@ export default function Home() {
     }
   };
 
-  const updateTodo = async (id) => {
+  const updateTodo = async (id, completed) => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}todos/${id}`,
@@ -71,7 +72,29 @@ export default function Home() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: editText }),
+          body: JSON.stringify({ text: editText || undefined }),
+        }
+      );
+
+      const data = await response.json();
+      setMessage(`Todo updated: ${data.text} (ID: ${data.id})`);
+      fetchTodos();
+      setEditTodo(null);
+    } catch (error) {
+      setMessage("Error updating todo");
+      console.error("Error:", error);
+    }
+  };
+  const updateCompleted = async (id, completed) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}todos/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ completed: Boolean(completed) ? 1 : 0 }),
         }
       );
 
@@ -107,7 +130,7 @@ export default function Home() {
         <div>
           <form
             onSubmit={handleSubmit}
-            className="w-[500px]"
+            className="w-[60vw]"
             style={{ display: "flex", gap: "10px", padding: "20px 0px" }}
           >
             <Input
@@ -120,12 +143,25 @@ export default function Home() {
             <Button type="submit">Add Todo</Button>
           </form>
 
-          <ul className="w-[500px]">
+          <ul className="w-[60vw]">
             {((Array.isArray(todos) && todos) || []).map((todo) => (
               <li
                 key={todo.id}
                 className="flex justify-between mb-2 gap-[24px]"
               >
+                <div className="flex items-center gap-[24px]">
+
+                <Button
+                    variant="ghost"
+                 onMouseDown={(e) => {
+                   e.preventDefault();
+                   updateCompleted(todo.id, !todo.completed);
+                 }}
+                  >
+                    <CheckCircle2 color={
+                      todo.completed ? "green" : "gray"
+                    } />
+                  </Button>
                 {editTodo == todo.id ? (
                   <Input
                     value={editTodo === todo.id ? editText : todo.text}
@@ -137,8 +173,9 @@ export default function Home() {
                     }}
                   />
                 ) : (
-                  <h1>{todo.text}</h1>
+                  <h1 style={{ textDecoration: todo.completed ? "line-through" : "none" }}>{todo.text}</h1>
                 )}
+                </div>
 
                 <div className="flex gap-2 todo-actions">
                   {editTodo === todo.id && (
