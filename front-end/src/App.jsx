@@ -4,6 +4,7 @@ import * as React from "react"
 import Navbar from "./components/ui/navbar"
 import { Routes, Route } from "react-router-dom"
 import Analytics from "./pages/Analytics"
+import Home from "./pages/Home"
 
 const components = [
   {
@@ -47,7 +48,7 @@ function App() {
    <div>
     <Navbar />
     <Routes>
-      <Route path="/" element={<h1>Home page</h1>} />
+      <Route path="/" element={<Home />} />
       <Route path="/book" element={<h1>Book</h1>} />
       <Route path="/about" element={<h1>About</h1>} />
       <Route path="/analytics" element={<Analytics />} />
