@@ -1,13 +1,14 @@
+// db.ts
 import mysql from 'mysql2/promise';
 
-// Temporary connection - we'll improve this later
-const connection = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',        // XAMPP default username
-    password: '',        // XAMPP default has no password
-    database: 'saar_taxi'  // We'll create this
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'saar_taxi',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-
-console.log("Connected to MySQL!");
-export default connection;
+export default pool;
