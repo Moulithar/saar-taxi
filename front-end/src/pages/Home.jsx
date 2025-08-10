@@ -54,6 +54,7 @@ const fetchTodos = async () => {
       <h1>Sigma sigma boy</h1>
       <p>Forget the safety, be where you fear to live, destroy reputation, be notorious</p>
       <h1>{greeting}</h1>
+      <h1>{greeting}</h1>
       {/* ...rest of your home page */}
 
       <div style={{ padding: '20px' }}>
