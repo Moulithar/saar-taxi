@@ -11,7 +11,7 @@ const [todos, setTodos] = useState([]);
 
 const fetchTodos = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/todos`);
+    const response = await fetch(`${"https://saar-taxi-api.vercel.app"}/todos`);
     const data = await response.json();
     setTodos(data);
     setMessage('');
@@ -23,7 +23,7 @@ const fetchTodos = async () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/todos`, {
+      const response = await fetch(`${"https://saar-taxi-api.vercel.app"}/todos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
