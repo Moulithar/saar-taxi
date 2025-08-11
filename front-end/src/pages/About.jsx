@@ -6,7 +6,7 @@ function About() {
     const [connectionStatus, setConnectionStatus] = useState('Connecting...');
 
     useEffect(() => {
-        const eventSource = new EventSource('http://localhost:4000/events');
+        const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}events`);
 
         eventSource.onopen = () => {
             console.log('SSE connection opened');
