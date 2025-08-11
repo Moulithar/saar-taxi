@@ -5,6 +5,7 @@ import Navbar from "./components/ui/navbar"
 import { Routes, Route } from "react-router-dom"
 import Analytics from "./pages/Analytics"
 import Home from "./pages/Home"
+import About from "./pages/About"
 
 const components = [
   {
@@ -50,7 +51,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/book" element={<h1>Book</h1>} />
-      <Route path="/about" element={<h1>About</h1>} />
+      <Route path="/about" element={<About />} />
       <Route path="/analytics" element={<Analytics />} />
     </Routes>
    </div>

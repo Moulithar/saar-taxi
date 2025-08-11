@@ -57,6 +57,9 @@ app.post("/api/todos", async (req, res) => {
       [result.insertId]
     );
 
+    // Send updated todos to all SSE clients
+    await sendTodosToClients();
+    
     res.status(201).json(newTodo[0]);
   } catch (error) {
     console.error(error);
@@ -106,6 +109,9 @@ app.put("/api/todos/:id", async (req, res) => {
       [id]
     );
 
+    // Send updated todos to all SSE clients
+    await sendTodosToClients();
+    
     res.status(200).json(updatedTodo[0]);
   } catch (error) {
     console.error(error);
@@ -138,6 +144,9 @@ app.delete("/api/todos/:id", async (req, res) => {
       [id]
     );
 
+    // Send updated todos to all SSE clients
+    await sendTodosToClients();
+
     res.status(200).json({
       message: "Todo deleted successfully",
       deletedTodo,
@@ -147,6 +156,53 @@ app.delete("/api/todos/:id", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
+
+// Store all SSE clients
+const clients = new Set<{ id: string; res: express.Response }>();
+
+// Function to send todos to all connected clients
+async function sendTodosToClients() {
+  try {
+    // Fetch current todos
+    const [todos] = await pool.execute<Todo[]>("SELECT * FROM todos");
+    
+    // Send to all connected clients
+    clients.forEach(client => {
+      client.res.write(`data: ${JSON.stringify(todos)}\n\n`);
+    });
+  } catch (error) {
+    console.error('Error sending todos to clients:', error);
+  }
+}
+
+app.get('/events', (req, res) => {
+    // Set SSE headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    // Allow CORS for SSE
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    // Generate a unique client ID
+    const clientId = Date.now().toString();
+    
+    // Add this client to our set
+    const client = { id: clientId, res };
+    clients.add(client);
+    
+    // Send initial todos data when client connects
+    sendTodosToClients();
+    
+    // Clean up when the client disconnects
+    req.on('close', () => {
+        clients.delete(client);
+        res.end();
+    });
+});
+
+
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on http://localhost:${PORT}`);
